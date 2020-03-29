@@ -10,17 +10,23 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"go.uber.org/zap"
 )
 
 func main() {
+	logger, _ := zap.NewProduction()
+	defer logger.Sync()
+	sugar := logger.Sugar().Named("grahovac")
+	sugar.Info("The application is starting...")
+
 	port := os.Getenv("PORT")
 	if port == "" {
-		return
+		sugar.Fatal("PORT is not set")
 	}
 
 	diagPort := os.Getenv("DIAG_PORT")
 	if diagPort == "" {
-		return
+		sugar.Fatal("DIAG_PORT is not set")
 	}
 
 	r := mux.NewRouter()
@@ -61,10 +67,10 @@ func main() {
 
 	select {
 	case x := <-interrupt:
-		// Received a signal
+		sugar.Infow("Received", "signal", x.String())
 
 	case err := <-shutdown:
-		// Received a shutdown message
+		sugar.Errorw("Error from functional unit", "err", err)
 	}
 
 	timeout, cancelFunc := context.WithTimeout(context.Background(), 5*time.Second)
@@ -79,4 +85,6 @@ func main() {
 	if err != nil {
 		// ?
 	}
+
+	sugar.Info("The application is stopped.")
 }
