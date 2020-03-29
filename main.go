@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"expvar"
 	"net"
 	"net/http"
 	"os"
@@ -37,6 +38,7 @@ func main() {
 
 	diagLogger := sugar.With("subapp", "diag_router")
 	diagRouter := mux.NewRouter()
+	diagRouter.Handle("/debug/vars", expvar.Handler())
 	diagRouter.HandleFunc("/health", func(
 		w http.ResponseWriter, _ *http.Request) {
 		diagLogger.Info("Health was called")
