@@ -7,9 +7,11 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"runtime"
 	"syscall"
 	"time"
 
+	"github.com/DataDog/datadog-go/statsd"
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 )
@@ -19,6 +21,12 @@ func main() {
 	defer logger.Sync()
 	sugar := logger.Sugar().Named("grahovac")
 	sugar.Info("The application is starting...")
+
+	c, err := statsd.New("127.0.0.1:8125")
+	if err != nil {
+		sugar.Fatalw("Couldn't connect to statsd", "err", err)
+	}
+	c.Namespace = "grahovac."
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -41,7 +49,17 @@ func main() {
 	diagRouter.Handle("/debug/vars", expvar.Handler())
 	diagRouter.HandleFunc("/health", func(
 		w http.ResponseWriter, _ *http.Request) {
+		err := c.Incr("health_calls", []string{}, 1)
+		if err != nil {
+			diagLogger.Errorw("Couldn't increment health_calls", "err", err)
+		}
 		diagLogger.Info("Health was called")
+		w.WriteHeader(http.StatusOK)
+	})
+	diagRouter.HandleFunc("/gc", func(
+		w http.ResponseWriter, _ *http.Request) {
+		diagLogger.Info("Calling GC...")
+		runtime.GC()
 		w.WriteHeader(http.StatusOK)
 	})
 
@@ -82,7 +100,7 @@ func main() {
 	timeout, cancelFunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelFunc()
 
-	err := server.Shutdown(timeout)
+	err = server.Shutdown(timeout)
 	if err != nil {
 		sugar.Errorw("The business logic is stopped with error", "err", err)
 	}
