@@ -35,9 +35,11 @@ func main() {
 		Handler: r,
 	}
 
+	diagLogger := sugar.With("subapp", "diag_router")
 	diagRouter := mux.NewRouter()
 	diagRouter.HandleFunc("/health", func(
 		w http.ResponseWriter, _ *http.Request) {
+		diagLogger.Info("Health was called")
 		w.WriteHeader(http.StatusOK)
 	})
 
@@ -48,6 +50,7 @@ func main() {
 
 	shutdown := make(chan error, 2)
 
+	sugar.Infof("Business logic server is starting...")
 	go func() {
 		err := server.ListenAndServe()
 		if err != nil && err != http.ErrServerClosed {
@@ -55,6 +58,7 @@ func main() {
 		}
 	}()
 
+	sugar.Infof("Diagnostics server is starting...")
 	go func() {
 		err := diag.ListenAndServe()
 		if err != nil && err != http.ErrServerClosed {
@@ -76,14 +80,14 @@ func main() {
 	timeout, cancelFunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelFunc()
 
-	err := diag.Shutdown(timeout)
+	err := server.Shutdown(timeout)
 	if err != nil {
-		// ?
+		sugar.Errorw("The business logic is stopped with error", "err", err)
 	}
 
-	err = server.Shutdown(timeout)
+	err = diag.Shutdown(timeout)
 	if err != nil {
-		// ?
+		sugar.Errorw("The diagnostics server is stopped with error", "err", err)
 	}
 
 	sugar.Info("The application is stopped.")
