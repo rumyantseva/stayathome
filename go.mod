@@ -1,9 +1,5 @@
-module stayathome
+module github.com/rumyantseva/stayathome
 
 go 1.14
 
-require (
-	github.com/DataDog/datadog-go v3.5.0+incompatible
-	github.com/gorilla/mux v1.7.4
-	go.uber.org/zap v1.14.1
-)
+require github.com/gorilla/mux v1.7.4
