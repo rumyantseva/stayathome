@@ -1,0 +1,270 @@
+[
+	{
+		"SpanContext": {
+			"TraceID": "6ef2dd939fb0556a3a34ade4e9bcc58b",
+			"SpanID": "ba75408434c4a79f",
+			"TraceFlags": 1
+		},
+		"ParentSpanID": "07d6cbdd5b3fbcb1",
+		"SpanKind": 2,
+		"Name": "/check",
+		"StartTime": "2020-08-07T21:35:16.361234+02:00",
+		"EndTime": "2020-08-07T21:35:16.361283873+02:00",
+		"Attributes": [
+			{
+				"Key": "net.transport",
+				"Value": {
+					"Type": "STRING",
+					"Value": "IP.TCP"
+				}
+			},
+			{
+				"Key": "net.peer.ip",
+				"Value": {
+					"Type": "STRING",
+					"Value": "127.0.0.1"
+				}
+			},
+			{
+				"Key": "net.peer.port",
+				"Value": {
+					"Type": "INT64",
+					"Value": 56917
+				}
+			},
+			{
+				"Key": "net.host.ip",
+				"Value": {
+					"Type": "STRING",
+					"Value": "127.0.0.1"
+				}
+			},
+			{
+				"Key": "net.host.port",
+				"Value": {
+					"Type": "INT64",
+					"Value": 8080
+				}
+			},
+			{
+				"Key": "http.method",
+				"Value": {
+					"Type": "STRING",
+					"Value": "GET"
+				}
+			},
+			{
+				"Key": "http.target",
+				"Value": {
+					"Type": "STRING",
+					"Value": "/check"
+				}
+			},
+			{
+				"Key": "http.server_name",
+				"Value": {
+					"Type": "STRING",
+					"Value": "diag"
+				}
+			},
+			{
+				"Key": "http.route",
+				"Value": {
+					"Type": "STRING",
+					"Value": "/check"
+				}
+			},
+			{
+				"Key": "http.user_agent",
+				"Value": {
+					"Type": "STRING",
+					"Value": "Go-http-client/1.1"
+				}
+			},
+			{
+				"Key": "http.scheme",
+				"Value": {
+					"Type": "STRING",
+					"Value": "http"
+				}
+			},
+			{
+				"Key": "http.host",
+				"Value": {
+					"Type": "STRING",
+					"Value": "127.0.0.1:8080"
+				}
+			},
+			{
+				"Key": "http.flavor",
+				"Value": {
+					"Type": "STRING",
+					"Value": "1.1"
+				}
+			},
+			{
+				"Key": "http.status_code",
+				"Value": {
+					"Type": "INT64",
+					"Value": 200
+				}
+			},
+			{
+				"Key": "http.status_text",
+				"Value": {
+					"Type": "STRING",
+					"Value": "OK"
+				}
+			}
+		],
+		"MessageEvents": null,
+		"Links": null,
+		"StatusCode": 0,
+		"StatusMessage": "HTTP status code: 200",
+		"HasRemoteParent": true,
+		"DroppedAttributeCount": 0,
+		"DroppedMessageEventCount": 0,
+		"DroppedLinkCount": 0,
+		"ChildSpanCount": 0,
+		"Resource": null,
+		"InstrumentationLibrary": {
+			"Name": "stayathome",
+			"Version": ""
+		}
+	}
+]
+[
+	{
+		"SpanContext": {
+			"TraceID": "6ef2dd939fb0556a3a34ade4e9bcc58b",
+			"SpanID": "07d6cbdd5b3fbcb1",
+			"TraceFlags": 1
+		},
+		"ParentSpanID": "0000000000000000",
+		"SpanKind": 2,
+		"Name": "/rent",
+		"StartTime": "2020-08-07T21:35:16.360414+02:00",
+		"EndTime": "2020-08-07T21:35:16.362401848+02:00",
+		"Attributes": [
+			{
+				"Key": "net.transport",
+				"Value": {
+					"Type": "STRING",
+					"Value": "IP.TCP"
+				}
+			},
+			{
+				"Key": "net.peer.ip",
+				"Value": {
+					"Type": "STRING",
+					"Value": "127.0.0.1"
+				}
+			},
+			{
+				"Key": "net.peer.port",
+				"Value": {
+					"Type": "INT64",
+					"Value": 56916
+				}
+			},
+			{
+				"Key": "net.host.ip",
+				"Value": {
+					"Type": "STRING",
+					"Value": "127.0.0.1"
+				}
+			},
+			{
+				"Key": "net.host.port",
+				"Value": {
+					"Type": "INT64",
+					"Value": 8080
+				}
+			},
+			{
+				"Key": "http.method",
+				"Value": {
+					"Type": "STRING",
+					"Value": "GET"
+				}
+			},
+			{
+				"Key": "http.target",
+				"Value": {
+					"Type": "STRING",
+					"Value": "/rent"
+				}
+			},
+			{
+				"Key": "http.server_name",
+				"Value": {
+					"Type": "STRING",
+					"Value": "diag"
+				}
+			},
+			{
+				"Key": "http.route",
+				"Value": {
+					"Type": "STRING",
+					"Value": "/rent"
+				}
+			},
+			{
+				"Key": "http.user_agent",
+				"Value": {
+					"Type": "STRING",
+					"Value": "curl/7.64.1"
+				}
+			},
+			{
+				"Key": "http.scheme",
+				"Value": {
+					"Type": "STRING",
+					"Value": "http"
+				}
+			},
+			{
+				"Key": "http.host",
+				"Value": {
+					"Type": "STRING",
+					"Value": "127.0.0.1:8080"
+				}
+			},
+			{
+				"Key": "http.flavor",
+				"Value": {
+					"Type": "STRING",
+					"Value": "1.1"
+				}
+			},
+			{
+				"Key": "http.status_code",
+				"Value": {
+					"Type": "INT64",
+					"Value": 200
+				}
+			},
+			{
+				"Key": "http.status_text",
+				"Value": {
+					"Type": "STRING",
+					"Value": "OK"
+				}
+			}
+		],
+		"MessageEvents": null,
+		"Links": null,
+		"StatusCode": 0,
+		"StatusMessage": "HTTP status code: 200",
+		"HasRemoteParent": false,
+		"DroppedAttributeCount": 0,
+		"DroppedMessageEventCount": 0,
+		"DroppedLinkCount": 0,
+		"ChildSpanCount": 0,
+		"Resource": null,
+		"InstrumentationLibrary": {
+			"Name": "stayathome",
+			"Version": ""
+		}
+	}
+]
