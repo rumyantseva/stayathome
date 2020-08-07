@@ -7,11 +7,11 @@ import (
 	"syscall"
 	"time"
 
-	"go.opentelemetry.io/otel/sdk/metric/selector/simple"
-
 	otelg "go.opentelemetry.io/otel/api/global"
 	"go.opentelemetry.io/otel/exporters/stdout"
+	"go.opentelemetry.io/otel/exporters/trace/jaeger"
 	"go.opentelemetry.io/otel/sdk/metric/controller/push"
+	"go.opentelemetry.io/otel/sdk/metric/selector/simple"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.uber.org/zap"
 
@@ -32,6 +32,18 @@ func main() {
 		appLoger.Fatalw("Can't enable Open Telemetry exporter", "err", err)
 	}
 
+	jaegerEndpoint := os.Getenv("JAEGER_ENDPOINT")
+	if jaegerEndpoint == "" {
+		appLoger.Fatal("Jaeger endpoint is not set")
+	}
+	jExporter, err := jaeger.NewRawExporter(
+		jaeger.WithAgentEndpoint(jaegerEndpoint),
+		jaeger.WithProcess(jaeger.Process{ServiceName: servicename}),
+	)
+	if err != nil {
+		appLoger.Fatalw("Can't create Jaeger exporter", "err", err)
+	}
+
 	// We need to register a global provider first.
 	// We use the "AlwaysSample" sampler for debug purposes,
 	// but it'll be to slow to keep it for production.
@@ -40,6 +52,7 @@ func main() {
 			sdktrace.Config{DefaultSampler: sdktrace.AlwaysSample()},
 		),
 		sdktrace.WithSyncer(exporter),
+		sdktrace.WithSyncer(jExporter),
 	)
 	if err != nil {
 		appLoger.Fatalw("Can't set Open Telemetry provider", "err", err)
