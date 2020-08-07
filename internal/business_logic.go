@@ -14,7 +14,7 @@ import (
 func BusinessLogic(logger *zap.SugaredLogger, tracer oteltrace.Tracer, port string, shutdown chan<- error) *http.Server {
 	r := mux.NewRouter()
 
-	mw := muxtrace.Middleware("diag", muxtrace.WithTracer(tracer))
+	mw := muxtrace.Middleware("bl", muxtrace.WithTracer(tracer))
 	r.Use(mw)
 
 	r.HandleFunc("/rent", handleRent(logger.With("handler", "rent"), "http://127.0.0.1:"+port+"/check"))

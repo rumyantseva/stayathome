@@ -14,7 +14,10 @@ import (
 // Diagnostics responsible for diagnostics logic of the app
 func Diagnostics(logger *zap.SugaredLogger, tracer oteltrace.Tracer, port string, shutdown chan<- error) *http.Server {
 	r := mux.NewRouter()
-	r.Use(muxtrace.Middleware("diag"))
+
+	mw := muxtrace.Middleware("bl", muxtrace.WithTracer(tracer))
+	r.Use(mw)
+
 	r.HandleFunc("/health", handleHealth(logger.With("handler", "health")))
 
 	server := http.Server{
