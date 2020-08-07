@@ -8,6 +8,7 @@ import (
 	"time"
 
 	otelg "go.opentelemetry.io/otel/api/global"
+	"go.opentelemetry.io/otel/exporters/metric/prometheus"
 	"go.opentelemetry.io/otel/exporters/stdout"
 	"go.opentelemetry.io/otel/exporters/trace/jaeger"
 	"go.opentelemetry.io/otel/sdk/metric/controller/push"
@@ -41,7 +42,7 @@ func main() {
 		jaeger.WithProcess(jaeger.Process{ServiceName: servicename}),
 	)
 	if err != nil {
-		appLoger.Fatalw("Can't create Jaeger exporter", "err", err)
+		appLoger.Fatalw("Can't set Jaeger exporter", "err", err)
 	}
 
 	// We need to register a global provider first.
@@ -70,6 +71,13 @@ func main() {
 	mc.Start()
 	defer mc.Stop()
 	otelg.SetMeterProvider(mc.Provider())
+
+	pExporter, err := prometheus.NewExportPipeline(prometheus.Config{})
+	if err != nil {
+		appLoger.Fatalw("Can't set Prometheus exporter", "err", err)
+	}
+	otelg.SetMeterProvider(pExporter.Provider())
+
 	meter := otelg.Meter(servicename)
 
 	appLoger.Info("Reading configuration...")
@@ -85,7 +93,7 @@ func main() {
 
 	shutdown := make(chan error, 2)
 	bl := internal.BusinessLogic(appLoger.With("module", "bl"), tracer, meter, port, shutdown)
-	diag := internal.Diagnostics(appLoger.With("module", "diag"), tracer, diagPort, shutdown)
+	diag := internal.Diagnostics(appLoger.With("module", "diag"), tracer, pExporter.ServeHTTP, diagPort, shutdown)
 	appLoger.Info("Servers are ready")
 
 	interrupt := make(chan os.Signal, 1)
