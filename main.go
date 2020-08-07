@@ -7,8 +7,11 @@ import (
 	"syscall"
 	"time"
 
+	"go.opentelemetry.io/otel/sdk/metric/selector/simple"
+
 	otelg "go.opentelemetry.io/otel/api/global"
 	"go.opentelemetry.io/otel/exporters/stdout"
+	"go.opentelemetry.io/otel/sdk/metric/controller/push"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.uber.org/zap"
 
@@ -46,6 +49,16 @@ func main() {
 	// Now we finally can make a tracer instance to track active spans:
 	tracer := otelg.Tracer(servicename)
 
+	// Similar story for metrics
+	mc := push.New(
+		simple.NewWithExactDistribution(),
+		exporter,
+	)
+	mc.Start()
+	defer mc.Stop()
+	otelg.SetMeterProvider(mc.Provider())
+	meter := otelg.Meter(servicename)
+
 	appLoger.Info("Reading configuration...")
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -58,7 +71,7 @@ func main() {
 	appLoger.Info("Configuration is ready")
 
 	shutdown := make(chan error, 2)
-	bl := internal.BusinessLogic(appLoger.With("module", "bl"), tracer, port, shutdown)
+	bl := internal.BusinessLogic(appLoger.With("module", "bl"), tracer, meter, port, shutdown)
 	diag := internal.Diagnostics(appLoger.With("module", "diag"), tracer, diagPort, shutdown)
 	appLoger.Info("Servers are ready")
 
