@@ -4,15 +4,21 @@ import (
 	"net"
 	"net/http"
 
+	muxtrace "go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux"
+	oteltrace "go.opentelemetry.io/otel/api/trace"
+
 	"go.uber.org/zap"
 
 	"github.com/gorilla/mux"
 )
 
 // Diagnostics responsible for diagnostics logic of the app
-func Diagnostics(logger *zap.SugaredLogger, port string, shutdown chan<- error) *http.Server {
+func Diagnostics(logger *zap.SugaredLogger, tracer oteltrace.Tracer, port string, shutdown chan<- error) *http.Server {
 	r := mux.NewRouter()
 	r.HandleFunc("/health", handleHealth(logger.With("handler", "health")))
+
+	mw := muxtrace.Middleware("diags", muxtrace.WithTracer(tracer))
+	r.Use(mw)
 
 	server := http.Server{
 		Addr:    net.JoinHostPort("", port),

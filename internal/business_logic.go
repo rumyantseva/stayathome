@@ -5,11 +5,18 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	muxtrace "go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux"
+	oteltrace "go.opentelemetry.io/otel/api/trace"
+	"go.opentelemetry.io/otel/instrumentation/httptrace"
 	"go.uber.org/zap"
 )
 
-func BusinessLogic(logger *zap.SugaredLogger, port string, shutdown chan<- error) *http.Server {
+func BusinessLogic(logger *zap.SugaredLogger, tracer oteltrace.Tracer, port string, shutdown chan<- error) *http.Server {
 	r := mux.NewRouter()
+
+	mw := muxtrace.Middleware("bl", muxtrace.WithTracer(tracer))
+	r.Use(mw)
+
 	r.HandleFunc("/rent", handleRent(logger.With("handler", "rent"), "http://127.0.0.1:"+port+"/check"))
 	r.HandleFunc("/check", handleCheck(logger.With("handler", "check")))
 
@@ -34,9 +41,19 @@ func handleRent(logger *zap.SugaredLogger, checkURL string) func(http.ResponseWr
 		w http.ResponseWriter, r *http.Request) {
 		logger.Info("Received a call")
 
-		checkr, err := http.Get(checkURL)
+		req, err := http.NewRequest(http.MethodGet, checkURL, nil)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
+			logger.Errorw("Error when creating request to check", "err", err)
+			return
+		}
+
+		httptrace.Inject(r.Context(), req)
+		checkr, err := http.DefaultClient.Do(req)
+
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			logger.Errorw("Error when sending request to check", "err", err)
 			return
 		}
 
