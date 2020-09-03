@@ -8,8 +8,9 @@ The application demonstrates how to start with observability in Go
 
 # Workshop materials in Russian
 
-You can find the slides [here](http://bit.ly/observability-aug).
-The recordings of the practical parts are available [here](https://www.youtube.com/playlist?list=PLyF2SpuGmalvFzvmGnMZGvxbxIZNnAN0S).
+- You can find the slides [here](http://bit.ly/observability-aug).
+- The original video from the conference is [here](https://youtu.be/7h7HOge2MAw). 
+- The recordings of the individual practical parts are available [here](https://www.youtube.com/playlist?list=PLyF2SpuGmalvFzvmGnMZGvxbxIZNnAN0S).
 
 # How to run?
 
